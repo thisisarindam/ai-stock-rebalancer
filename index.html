@@ -1,0 +1,130 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>AI Stock Re-balancer</title>
+    <style>
+        body {
+            font-family: Arial, sans-serif;
+            background-color: #f4f4f9;
+            margin: 40px;
+        }
+        .container {
+            max-width: 600px;
+            margin: auto;
+            background: white;
+            padding: 30px;
+            border-radius: 8px;
+            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+        }
+        h1 {
+            text-align: center;
+            color: #333;
+        }
+        .form-group {
+            margin-bottom: 20px;
+        }
+        input[type="file"] {
+            display: block;
+            margin-top: 10px;
+        }
+        button {
+            background-color: #28a745;
+            color: white;
+            padding: 12px 15px;
+            border: none;
+            border-radius: 5px;
+            cursor: pointer;
+            font-size: 16px;
+            font-weight: bold;
+            width: 100%;
+            transition: background 0.3s;
+        }
+        button:hover {
+            background-color: #218838;
+        }
+        textarea {
+            width: 100%;
+            padding: 15px;
+            border: 1px solid #ccc;
+            border-radius: 5px;
+            resize: vertical;
+            box-sizing: border-box;
+            font-family: monospace;
+            font-size: 14px;
+            line-height: 1.5;
+            background-color: #f8f9fa;
+        }
+        .loader {
+            display: none;
+            text-align: center;
+            margin: 15px 0;
+            color: #0056b3;
+            font-style: italic;
+            font-weight: bold;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>AI Stock Re-balancer</h1>
+        
+        <div class="form-group">
+            <label for="excelFile"><strong>1. Upload Inventory Data (.xls, .xlsx):</strong></label>
+            <input type="file" id="excelFile" accept=".xls,.xlsx" />
+        </div>
+
+        <button id="rebalanceBtn">Stock Re-balance</button>
+        
+        <div id="loader" class="loader">AI is analyzing sales velocity and calculating re-balance...</div>
+        
+        <div class="form-group" style="margin-top: 25px;">
+            <label for="resultBox"><strong>2. AI Re-balancing Plan:</strong></label>
+            <textarea id="resultBox" rows="12" readonly placeholder="AI suggestions and transfer quantities will appear here..."></textarea>
+        </div>
+    </div>
+
+    <script>
+        document.getElementById('rebalanceBtn').addEventListener('click', async function() {
+            const fileInput = document.getElementById('excelFile');
+            const resultBox = document.getElementById('resultBox');
+            const loader = document.getElementById('loader');
+
+            if (fileInput.files.length === 0) {
+                alert('Please select an Excel file (.xls or .xlsx) to upload first.');
+                return;
+            }
+
+            // Clear previous results and show loading state
+            resultBox.value = '';
+            loader.style.display = 'block';
+
+            // Create FormData to hold the uploaded file
+            const formData = new FormData();
+            formData.append("file", fileInput.files[0]);
+
+            // UPDATE THIS URL to your actual Render URL once deployed
+            const backendUrl = "https://your-app-name.onrender.com/rebalance";
+
+            try {
+                // Send the file to our live Python backend on Render
+                const response = await fetch(backendUrl, {
+                    method: "POST",
+                    body: formData
+                });
+                
+                const data = await response.json();
+                
+                if (!response.ok) throw new Error(data.error || 'Server error');
+                
+                resultBox.value = data.result;
+            } catch (error) {
+                resultBox.value = "Error: " + error.message;
+            } finally {
+                loader.style.display = 'none';
+            }
+        });
+    </script>
+</body>
+</html>
