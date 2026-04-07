@@ -17,7 +17,8 @@ app.add_middleware(
 )
 
 # Configure Gemini API Key (Make sure you set this as an environment variable)
-genai.configure(api_key=os.environ.get("GEMINI_API_KEY"))
+api_key = os.environ.get("GEMINI_API_KEY") or os.environ.get("GOOGLE_API_KEY")
+genai.configure(api_key=api_key)
 
 @app.post("/rebalance")
 async def rebalance_stock(file: UploadFile = File(...)):
@@ -25,6 +26,9 @@ async def rebalance_stock(file: UploadFile = File(...)):
         raise HTTPException(status_code=400, detail="Invalid file type. Please upload an Excel file.")
     
     try:
+        if not api_key:
+            raise ValueError("API Key is missing on the server. Please check Render Environment Variables.")
+            
         # Read the uploaded Excel file into a Pandas DataFrame
         contents = await file.read()
         df = pd.read_excel(io.BytesIO(contents))
