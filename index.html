@@ -44,17 +44,29 @@
         button:hover {
             background-color: #218838;
         }
-        textarea {
+        .result-container {
             width: 100%;
             padding: 15px;
             border: 1px solid #ccc;
             border-radius: 5px;
-            resize: vertical;
             box-sizing: border-box;
-            font-family: monospace;
-            font-size: 14px;
-            line-height: 1.5;
             background-color: #f8f9fa;
+            min-height: 200px;
+            overflow-x: auto;
+        }
+        .result-container table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+        }
+        .result-container th, .result-container td {
+            border: 1px solid #ddd;
+            padding: 8px;
+            text-align: left;
+        }
+        .result-container th {
+            background-color: #0056b3;
+            color: white;
         }
         .loader {
             display: none;
@@ -65,6 +77,8 @@
             font-weight: bold;
         }
     </style>
+    <!-- Import Marked.js to parse Markdown into HTML -->
+    <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
     <div class="container">
@@ -81,7 +95,7 @@
         
         <div class="form-group" style="margin-top: 25px;">
             <label for="resultBox"><strong>2. AI Re-balancing Plan:</strong></label>
-            <textarea id="resultBox" rows="12" readonly placeholder="AI suggestions and transfer quantities will appear here..."></textarea>
+            <div id="resultBox" class="result-container">AI suggestions and transfer quantities will appear here...</div>
         </div>
     </div>
 
@@ -97,7 +111,7 @@
             }
 
             // Clear previous results and show loading state
-            resultBox.value = '';
+            resultBox.innerHTML = '';
             loader.style.display = 'block';
 
             // Create FormData to hold the uploaded file
@@ -118,9 +132,10 @@
                 
                 if (!response.ok) throw new Error(data.detail || 'Server error');
                 
-                resultBox.value = data.result;
+                // Convert Markdown to HTML and inject it into the div
+                resultBox.innerHTML = marked.parse(data.result);
             } catch (error) {
-                resultBox.value = "Error: " + error.message;
+                resultBox.innerHTML = `<span style="color:red;">Error: ${error.message}</span>`;
             } finally {
                 loader.style.display = 'none';
             }
