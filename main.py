@@ -48,7 +48,7 @@ async def rebalance_stock(file: UploadFile = File(...)):
         {data_str}
         """
         
-        model = genai.GenerativeModel('gemini-3.1-pro-preview')
+        model = genai.GenerativeModel('gemini-3.1-flash-lite-preview')
         response = model.generate_content(prompt)
         return {"result": response.text}
     except Exception as e:
