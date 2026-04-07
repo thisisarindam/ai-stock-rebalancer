@@ -116,7 +116,7 @@
                 
                 const data = await response.json();
                 
-                if (!response.ok) throw new Error(data.error || 'Server error');
+                if (!response.ok) throw new Error(data.detail || 'Server error');
                 
                 resultBox.value = data.result;
             } catch (error) {
