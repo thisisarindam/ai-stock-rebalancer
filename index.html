@@ -10,6 +10,32 @@
             background-color: #f4f4f9;
             margin: 40px;
         }
+        
+        /* --- ANIMATION KEYFRAMES --- */
+        @keyframes slideUpFade {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+        @keyframes spin {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+        @keyframes pulse {
+            0% { opacity: 0.7; }
+            50% { opacity: 1; }
+            100% { opacity: 0.7; }
+        }
+        @keyframes slideYellow {
+            0% { background-position: 0% 50%; }
+            50% { background-position: 100% 50%; }
+            100% { background-position: 0% 50%; }
+        }
+        @keyframes strokeFade {
+            0% { border-color: rgba(8, 106, 145, 1); box-shadow: 0 0 6px rgba(8, 106, 145, 0.8); }
+            50% { border-color: rgba(8, 106, 145, 0.4); box-shadow: 0 0 16px rgba(8, 106, 145, 0.2); }
+            100% { border-color: rgba(8, 106, 145, 1); box-shadow: 0 0 6px rgba(8, 106, 145, 0.8); }
+        }
+
         .container {
             max-width: 600px;
             margin: auto;
@@ -17,6 +43,7 @@
             padding: 30px;
             border-radius: 8px;
             box-shadow: 0 4px 10px rgba(0,0,0,0.1);
+            animation: slideUpFade 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
         }
         h1 {
             text-align: center;
@@ -30,19 +57,24 @@
             margin-top: 10px;
         }
         button {
-            background-color: #28a745;
+            background-color: #0056b3;
             color: white;
+            text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
             padding: 12px 15px;
-            border: none;
+            border: 2px solid #086a91;
             border-radius: 5px;
             cursor: pointer;
             font-size: 16px;
             font-weight: bold;
             width: 100%;
-            transition: background 0.3s;
+            transition: all 5s cubic-bezier(0.25, 0.8, 0.25, 1);
+            animation: slideYellow 25s infinite ease-in, strokeFade 3s infinite ease-in;
         }
         button:hover {
-            background-color: #218838;
+            transform: translateY(-2px);
+        }
+        button:active {
+            transform: translateY(0) scale(0.98);
         }
         .result-container {
             width: 100%;
@@ -53,6 +85,11 @@
             background-color: #f8f9fa;
             min-height: 200px;
             overflow-x: auto;
+            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+        }
+        .result-container:hover {
+            border-color: #d1d1d1;
+            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
         }
         .result-container table {
             width: 100%;
@@ -71,10 +108,24 @@
         .loader {
             display: none;
             text-align: center;
-            margin: 15px 0;
+            margin: 20px 0;
             color: #0056b3;
-            font-style: italic;
             font-weight: bold;
+            animation: pulse 1.5s infinite;
+        }
+        .loader-spinner {
+            display: inline-block;
+            width: 18px;
+            height: 18px;
+            border: 3px solid rgba(0, 86, 179, 0.2);
+            border-radius: 50%;
+            border-top-color: #0056b3;
+            animation: spin 1s linear infinite;
+            vertical-align: middle;
+            margin-right: 8px;
+        }
+        .fade-in {
+            animation: slideUpFade 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
         }
     </style>
     <!-- Import Marked.js to parse Markdown into HTML -->
@@ -91,7 +142,10 @@
 
         <button id="rebalanceBtn">Stock Re-balance</button>
         
-        <div id="loader" class="loader">AI is analyzing sales velocity and calculating re-balance...</div>
+        <div id="loader" class="loader">
+            <div class="loader-spinner"></div>
+            AI is analyzing sales velocity and calculating re-balance...
+        </div>
         
         <div class="form-group" style="margin-top: 25px;">
             <label for="resultBox"><strong>2. AI Re-balancing Plan:</strong></label>
@@ -111,7 +165,8 @@
             }
 
             // Clear previous results and show loading state
-            resultBox.innerHTML = '';
+            resultBox.innerHTML = 'AI suggestions and transfer quantities will appear here...';
+            resultBox.classList.remove('fade-in');
             loader.style.display = 'block';
 
             // Create FormData to hold the uploaded file
@@ -134,6 +189,11 @@
                 
                 // Convert Markdown to HTML and inject it into the div
                 resultBox.innerHTML = marked.parse(data.result);
+                
+                // Re-trigger the fade-in animation for the new result
+                void resultBox.offsetWidth; // Trigger reflow
+                resultBox.classList.add('fade-in');
+                
             } catch (error) {
                 resultBox.innerHTML = `<span style="color:red;">Error: ${error.message}</span>`;
             } finally {
