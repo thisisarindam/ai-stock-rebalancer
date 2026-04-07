@@ -3,6 +3,7 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <title>AI Stock Re-balancer</title>
     <style>
         body {
@@ -58,7 +59,7 @@
         }
         button {
             background-color: #0056b3;
-            color: white;
+            color: rgb(255, 255, 255);
             text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
             padding: 12px 15px;
             border: 2px solid #086a91;
@@ -67,11 +68,15 @@
             font-size: 16px;
             font-weight: bold;
             width: 100%;
-            transition: all 5s cubic-bezier(0.25, 0.8, 0.25, 1);
-            animation: slideYellow 25s infinite ease-in, strokeFade 3s infinite ease-in;
+            transition: all 3s cubic-bezier(0.25, 0.8, 0.25, 1);
+            animation: slideYellow 3s linear;
         }
         button:hover {
-            transform: translateY(-2px);
+            /* transform: translateY(-2px); */
+            /* background-image: url('ft_logo.png'); */
+            background-repeat: space;
+            background-position: center;
+            background-size: 5%;
         }
         button:active {
             transform: translateY(0) scale(0.98);
@@ -133,14 +138,14 @@
 </head>
 <body>
     <div class="container">
-        <h1>AI Stock Re-balancer</h1>
+        <h1 >AI Stock Re-balancer</h1>
         
         <div class="form-group">
             <label for="excelFile"><strong>1. Upload Inventory Data (.xls, .xlsx):</strong></label>
             <input type="file" id="excelFile" accept=".xls,.xlsx" />
         </div>
 
-        <button id="rebalanceBtn">Stock Re-balance</button>
+        <button id="rebalanceBtn" class="animate__fadeIn">Stock Re-balance</button>
         
         <div id="loader" class="loader">
             <div class="loader-spinner"></div>
