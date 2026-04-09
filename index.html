@@ -3,185 +3,354 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css"/>
     <title>AI Stock Re-balancer</title>
     <style>
+        @import url('https://fonts.googleapis.com/css2?family=Inter:wght@400;500;600&display=swap');
+
         body {
-            font-family: Arial, sans-serif;
-            background-color: black;
-            color: white;
-            margin: 40px;
+            font-family: 'Inter', -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, sans-serif;
+            background-color: #0f172a;
+            color: #f8fafc;
+            margin: 0;
+            padding: 60px 20px;
+            display: flex;
+            justify-content: center;
+            transition: background-color 0.5s ease, color 0.5s ease;
         }
         
-        /* --- ANIMATION KEYFRAMES --- */
-        @keyframes slideUpFade {
-            from { opacity: 0; transform: translateY(15px); }
+        /* --- SUBTLE ANIMATIONS --- */
+        @keyframes softSlideUp {
+            from { opacity: 0; transform: translateY(10px); }
             to { opacity: 1; transform: translateY(0); }
         }
-        @keyframes spin {
+        @keyframes smoothSpin {
             0% { transform: rotate(0deg); }
             100% { transform: rotate(360deg); }
         }
-        @keyframes pulse {
-            0% { opacity: 0.7; }
-            50% { opacity: 1; }
-            100% { opacity: 0.7; }
+        @keyframes fadePulse {
+            0%, 100% { opacity: 1; }
+            50% { opacity: 0.5; }
         }
-        @keyframes slideYellow {
-            0% { background-position: 0% 50%; }
-            50% { background-position: 100% 50%; }
-            100% { background-position: 0% 50%; }
-        }
-        @keyframes strokeFade {
-            0% { border-color: rgba(8, 106, 145, 1); box-shadow: 0 0 6px rgba(8, 106, 145, 0.8); }
-            50% { border-color: rgba(8, 106, 145, 0.4); box-shadow: 0 0 16px rgba(8, 106, 145, 0.2); }
-            100% { border-color: rgba(8, 106, 145, 1); box-shadow: 0 0 6px rgba(8, 106, 145, 0.8); }
-        }
-        @keyframes logoPulseGlow {
-            0% { filter: drop-shadow(0 0 8px rgba(8, 106, 145, 0.5)); transform: translateY(0px); }
-            50% { filter: drop-shadow(0 0 25px rgba(8, 106, 145, 1)); transform: translateY(-4px); }
-            100% { filter: drop-shadow(0 0 8px rgba(8, 106, 145, 0.5)); transform: translateY(0px); }
+        @keyframes contentSlideIn {
+            from { opacity: 0; transform: translateY(15px); }
+            to { opacity: 1; transform: translateY(0); }
         }
 
         .container {
-            max-width: 600px;
-            margin: auto;
-            background: black;
-            padding: 30px;
-            border-radius: 8px;
-            box-shadow: 0 4px 10px rgba(0,0,0,0.1);
-            animation: slideUpFade 0.8s cubic-bezier(0.25, 0.8, 0.25, 1);
+            width: 100%;
+            max-width: 640px;
+            background: #1e293b;
+            padding: 40px;
+            border-radius: 16px;
+            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.3);
+            animation: softSlideUp 0.8s cubic-bezier(0.16, 1, 0.3, 1);
+            transition: background-color 0.5s ease, box-shadow 0.5s ease;
+        }
+        .header-content {
+            display: flex;
+            align-items: center;
+            justify-content: space-between;
+            margin-bottom: 30px;
+            padding-bottom: 20px;
+            border-bottom: 1px solid #334155;
+            transition: border-color 0.5s ease;
+        }
+        .header-content h1 {
+            margin: 0;
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: #f8fafc;
+            transition: color 0.5s ease;
         }
         .company-logo {
-            display: block;
-            margin: 0 auto 15px auto;
-            width: 100%;
-            max-width: 100px; /* Adjust this to make the logo larger or smaller inside the container */
+            max-width: 70px;
             height: auto;
-            animation: logoPulseGlow 4s infinite ease-in-out;
+            opacity: 0.9;
+            transition: opacity 0.3s ease;
         }
-        h1 {
-            text-align: center;
-            color: white;
+        .company-logo:hover {
+            opacity: 1;
         }
         .form-group {
-            margin-bottom: 20px;
+            margin-bottom: 24px;
+        }
+        label {
+            display: block;
+            margin-bottom: 8px;
+            font-weight: 500;
+            font-size: 0.95rem;
+            color: #cbd5e1;
+            transition: color 0.5s ease;
         }
         input[type="file"] {
             display: block;
-            margin-top: 10px;
+            width: 100%;
+            padding: 10px 12px;
+            background: #0f172a;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            color: #f8fafc;
+            font-size: 0.9rem;
+            transition: all 0.3s ease;
+            box-sizing: border-box;
+        }
+        input[type="file"]::file-selector-button {
+            background: #334155;
+            color: #f8fafc;
+            border: none;
+            padding: 8px 12px;
+            border-radius: 4px;
+            margin-right: 12px;
+            cursor: pointer;
+            transition: background 0.2s ease;
+        }
+        input[type="file"]::file-selector-button:hover {
+            background: #475569;
         }
         button {
-            background-color: #0056b3;
-            color: rgb(255, 255, 255);
-            text-shadow: 1px 1px 2px rgba(0,0,0,0.6);
-            padding: 12px 15px;
-            border: 2px solid #086a91;
-            border-radius: 5px;
+            background-color: #3b82f6;
+            color: white;
+            padding: 14px 20px;
+            border: none;
+            border-radius: 8px;
             cursor: pointer;
             font-size: 16px;
-            font-weight: bold;
+            font-weight: 600;
             width: 100%;
-            transition: all 3s cubic-bezier(0.25, 0.8, 0.25, 1);
-            animation: slideYellow 3s linear;
+            transition: all 0.3s cubic-bezier(0.16, 1, 0.3, 1);
+            box-shadow: 0 4px 6px -1px rgba(59, 130, 246, 0.2);
         }
         button:hover {
-            /* transform: translateY(-2px); */
-            /* background-image: url('ft_logo.png'); */
-            background-repeat: space;
-            background-position: center;
-            background-size: 5%;
+            background-color: #2563eb;
+            transform: translateY(-2px);
+            box-shadow: 0 6px 12px -2px rgba(59, 130, 246, 0.3);
         }
         button:active {
-            transform: translateY(0) scale(0.98);
+            transform: translateY(0);
+            box-shadow: 0 2px 4px -1px rgba(59, 130, 246, 0.2);
         }
         .result-container {
             width: 100%;
-            padding: 15px;
-            border: 1px solid #ccc;
-            border-radius: 5px;
-            box-sizing: border-box;
-            background-color: black;
-            min-height: 200px;
+            padding: 20px;
+            border: 1px solid #334155;
+            border-radius: 8px;
+            background-color: #0f172a;
+            min-height: 150px;
             overflow-x: auto;
-            transition: border-color 0.3s ease, box-shadow 0.3s ease;
+            font-size: 0.95rem;
+            line-height: 1.6;
+            color: #cbd5e1;
+            box-sizing: border-box;
+            transition: all 0.5s ease;
         }
-        .result-container:hover {
-            border-color: #d1d1d1;
-            box-shadow: 0 4px 12px rgba(0,0,0,0.05);
+        
+        /* --- ENHANCED REPORT TYPOGRAPHY & ANIMATION --- */
+        .result-container > * {
+            animation: contentSlideIn 0.5s cubic-bezier(0.16, 1, 0.3, 1) both;
         }
+        .result-container > *:nth-child(1) { animation-delay: 0.1s; }
+        .result-container > *:nth-child(2) { animation-delay: 0.2s; }
+        .result-container > *:nth-child(3) { animation-delay: 0.3s; }
+        .result-container > *:nth-child(4) { animation-delay: 0.4s; }
+        .result-container > *:nth-child(n+5) { animation-delay: 0.5s; }
+
+        .result-container h1, .result-container h2, .result-container h3 {
+            color: #60a5fa;
+            margin-top: 1.5em;
+            margin-bottom: 0.5em;
+            font-weight: 600;
+            border-bottom: 1px solid #334155;
+            padding-bottom: 6px;
+        }
+        .result-container p { margin-bottom: 1em; }
+        .result-container strong {
+            color: #f8fafc;
+            background-color: rgba(59, 130, 246, 0.15);
+            padding: 2px 6px;
+            border-radius: 4px;
+        }
+        .result-container ul { padding-left: 20px; margin-bottom: 1em; }
+        .result-container li { margin-bottom: 0.4em; }
+        .result-container li::marker { color: #3b82f6; }
+
         .result-container table {
             width: 100%;
-            border-collapse: collapse;
+            border-collapse: separate;
+            border-spacing: 0;
             margin: 15px 0;
+            font-size: 0.9rem;
+            border-radius: 8px;
+            overflow: hidden;
+            border: 1px solid #334155;
         }
         .result-container th, .result-container td {
-            border: 1px solid #ddd;
-            padding: 8px;
+            border-bottom: 1px solid #334155;
+            padding: 10px 12px;
             text-align: left;
         }
+        .result-container tr:last-child td { border-bottom: none; }
+        .result-container tbody tr { transition: background-color 0.2s ease; }
+        .result-container tbody tr:hover { background-color: rgba(255, 255, 255, 0.03); }
         .result-container th {
-            background-color: #0056b3;
-            color: white;
+            background-color: #1e293b;
+            color: #60a5fa;
+            font-weight: 600;
+            text-transform: uppercase;
+            font-size: 0.8rem;
+            letter-spacing: 0.05em;
         }
         .loader {
             display: none;
             text-align: center;
-            margin: 20px 0;
-            color: #0056b3;
-            font-weight: bold;
-            animation: pulse 1.5s infinite;
+            margin: 24px 0;
+            color: #3b82f6;
+            font-weight: 500;
+            font-size: 0.95rem;
+            animation: fadePulse 2s infinite;
         }
         .loader-spinner {
             display: inline-block;
-            width: 18px;
-            height: 18px;
-            border: 3px solid rgba(0, 86, 179, 0.2);
+            width: 16px;
+            height: 16px;
+            border: 2.5px solid rgba(59, 130, 246, 0.2);
             border-radius: 50%;
-            border-top-color: #0056b3;
-            animation: spin 1s linear infinite;
+            border-top-color: #3b82f6;
+            animation: smoothSpin 1s linear infinite;
             vertical-align: middle;
-            margin-right: 8px;
+            margin-right: 10px;
         }
         .fade-in {
-            animation: slideUpFade 0.6s cubic-bezier(0.25, 0.8, 0.25, 1) forwards;
+            animation: softSlideUp 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
         }
-        .extra-div {
-            display: flex;
-            align-items: left;
-            gap: 10px;
+
+        /* --- THEME TOGGLE STYLES --- */
+        .theme-toggle-btn {
+            position: absolute;
+            top: 20px;
+            right: 20px;
+            width: auto;
+            padding: 8px 16px;
+            font-size: 13px;
+            font-weight: 500;
+            background-color: rgba(30, 41, 59, 0.8);
+            backdrop-filter: blur(4px);
+            color: #f8fafc;
+            border: 1px solid #334155;
+            border-radius: 20px;
+            box-shadow: none;
+        }
+        .theme-toggle-btn:hover {
+            background-color: rgba(51, 65, 85, 0.9);
+            transform: none;
+            box-shadow: none;
+        }
+
+        body.light-theme {
+            background-color: #f8fafc;
+            color: #0f172a;
+        }
+        body.light-theme .container {
+            background-color: #ffffff;
+            box-shadow: 0 10px 30px -5px rgba(0,0,0,0.08);
+        }
+        body.light-theme .header-content {
+            border-bottom-color: #e2e8f0;
+        }
+        body.light-theme .header-content h1 {
+            color: #0f172a;
+        }
+        body.light-theme label {
+            color: #475569;
+        }
+        body.light-theme input[type="file"] {
+            background: #f1f5f9;
+            border-color: #cbd5e1;
+            color: #0f172a;
+        }
+        body.light-theme input[type="file"]::file-selector-button {
+            background: #e2e8f0;
+            color: #334155;
+        }
+        body.light-theme input[type="file"]::file-selector-button:hover {
+            background: #cbd5e1;
+        }
+        body.light-theme .result-container {
+            background-color: #f1f5f9;
+            border-color: #e2e8f0;
+            color: #334155;
+        }
+        body.light-theme .result-container h1, 
+        body.light-theme .result-container h2, 
+        body.light-theme .result-container h3 {
+            color: #2563eb;
+            border-bottom-color: #cbd5e1;
+        }
+        body.light-theme .result-container strong {
+            color: #0f172a;
+            background-color: rgba(37, 99, 235, 0.1);
+        }
+        body.light-theme .result-container table {
+            border-color: #cbd5e1;
+        }
+        body.light-theme .result-container th, 
+        body.light-theme .result-container td {
+            border-color: #e2e8f0;
+        }
+        body.light-theme .result-container tbody tr:hover { background-color: rgba(0, 0, 0, 0.02); }
+        body.light-theme .result-container th {
+            background-color: #e2e8f0;
+            color: #2563eb;
+        }
+        body.light-theme .theme-toggle-btn {
+            background-color: rgba(255, 255, 255, 0.8);
+            color: #0f172a;
+            border-color: #e2e8f0;
+        }
+        body.light-theme .theme-toggle-btn:hover {
+            background-color: #f1f5f9;
         }
     </style>
     <!-- Import Marked.js to parse Markdown into HTML -->
     <script src="https://cdn.jsdelivr.net/npm/marked/marked.min.js"></script>
 </head>
 <body>
+    <button id="themeToggleBtn" class="theme-toggle-btn">Switch to Light Theme</button>
     <div class="container">
-        <div class="extra-div">
-        
-        <h1>AI Stock Re-balancer</h1>
-        <img src="ft_logo.png" alt="Company Logo" class="company-logo" />
+        <div class="header-content">
+            <h1>AI Stock Re-balancer</h1>
+            <img src="ft_logo.png" alt="Company Logo" class="company-logo" />
         </div>
         
         <div class="form-group">
-            <label for="excelFile"><strong>1. Upload Inventory Data (.xls, .xlsx):</strong></label>
+            <label for="excelFile">1. Upload Inventory Data (.xls, .xlsx):</label>
             <input type="file" id="excelFile" accept=".xls,.xlsx" />
         </div>
 
-        <button id="rebalanceBtn" class="animate__flipInX">Stock Re-balance</button>
+        <button id="rebalanceBtn">Stock Re-balance</button>
         
-        <div id="loader" class="loader animate__flipInX">
+        <div id="loader" class="loader">
             <div class="loader-spinner"></div>
-            AI is analyzing sales velocity and calculating re-balance...
+            Analyzing sales velocity & calculating re-balance...
         </div>
         
         <div class="form-group" style="margin-top: 25px;">
-            <label for="resultBox"><strong>2. AI Re-balancing Plan:</strong></label>
+            <label for="resultBox">2. AI Re-balancing Plan:</label>
             <div id="resultBox" class="result-container">AI suggestions and transfer quantities will appear here...</div>
         </div>
     </div>
 
     <script>
+        // Theme Toggle Logic
+        const themeToggleBtn = document.getElementById('themeToggleBtn');
+        themeToggleBtn.addEventListener('click', function() {
+            document.body.classList.toggle('light-theme');
+            if (document.body.classList.contains('light-theme')) {
+                this.textContent = 'Switch to Dark Theme';
+            } else {
+                this.textContent = 'Switch to Light Theme';
+            }
+        });
+
         document.getElementById('rebalanceBtn').addEventListener('click', async function() {
             const fileInput = document.getElementById('excelFile');
             const resultBox = document.getElementById('resultBox');
